@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.algaworks.algafood.domain.model.FotoProduto;
 import com.algaworks.algafood.domain.repository.ProdutoRepository;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import java.io.InputStream;
 import java.util.Optional;
@@ -48,6 +49,15 @@ public class CatalogoFotoProdutoService {
 
         return foto;
     }
+
+    @Transactional
+    public void excluir(Long restauranteId, Long produtoId){
+            FotoProduto fotoProduto = buscarOuFalhar(restauranteId, produtoId);
+            produtoRepository.delete(fotoProduto);
+            produtoRepository.flush();
+            fotoStorage.remover(fotoProduto.getNomeArquivo());
+    }
+
 
     public FotoProduto buscarOuFalhar(Long restauranteId, Long produtoId) {
         return produtoRepository.findFotoById(restauranteId, produtoId)

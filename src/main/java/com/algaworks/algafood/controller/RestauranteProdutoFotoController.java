@@ -5,14 +5,17 @@ import com.algaworks.algafood.domain.model.FotoProduto;
 import com.algaworks.algafood.domain.model.FotoProdutoModel;
 import com.algaworks.algafood.domain.model.Produto;
 import com.algaworks.algafood.domain.model.dto.input.FotoProdutoInput;
+import com.algaworks.algafood.domain.repository.ProdutoRepository;
 import com.algaworks.algafood.domain.sevice.CadastroProdutoService;
 import com.algaworks.algafood.domain.sevice.CatalogoFotoProdutoService;
 import com.algaworks.algafood.domain.sevice.FotoStorageService;
 import com.algaworks.algafood.exceptions.EntidadeNaoEncontradaException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.HttpMediaTypeNotAcceptableException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -88,6 +91,14 @@ public class RestauranteProdutoFotoController {
         } catch (EntidadeNaoEncontradaException | IOException e) {
             return ResponseEntity.notFound().build();
         }
+    }
+
+    @DeleteMapping
+    @Transactional(rollbackFor = Exception.class)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteFoto(@PathVariable Long restauranteId,
+                           @PathVariable Long produtoId) {
+       catalogoFotoProduto.excluir(restauranteId,produtoId);
     }
 
     private void verificarCompatibilidadeMediaType(MediaType mediaTypeFoto,
