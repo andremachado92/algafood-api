@@ -6,11 +6,14 @@ import com.algaworks.algafood.domain.model.dto.FormaPagamentoModel;
 import com.algaworks.algafood.domain.model.dto.input.FormaPagamentoInput;
 import com.algaworks.algafood.domain.sevice.CadastroFormaPagamento;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.CacheControl;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 @RestController
 @RequestMapping("/formas-pagamentos")
@@ -30,13 +33,19 @@ public class FormaPagamentoController {
     }
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public FormaPagamentoModel buscar(@PathVariable Long id){
-        return assembler.toModel(formaPagamentoService.buscar(id));
+    public ResponseEntity<FormaPagamentoModel> buscar(@PathVariable Long id){
+        FormaPagamentoModel formaPagamentoModel = assembler.toModel(formaPagamentoService.buscar(id));
+        return ResponseEntity.ok()
+                .cacheControl(CacheControl.maxAge(10L, TimeUnit.SECONDS))
+                .body(formaPagamentoModel);
     }
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<FormaPagamentoModel> listar(){
-        return assembler.toCollectionModel(formaPagamentoService.listar());
+    public ResponseEntity<List<FormaPagamentoModel>> listar(){
+        List<FormaPagamentoModel> formaPagamentoModels = assembler.toCollectionModel(formaPagamentoService.listar());
+        return ResponseEntity.ok()
+                .cacheControl(CacheControl.maxAge(10L, TimeUnit.SECONDS))
+                .body(formaPagamentoModels);
     }
 
     @DeleteMapping("deletar/{id}")
